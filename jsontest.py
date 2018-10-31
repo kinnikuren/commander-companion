@@ -69,33 +69,81 @@ def convert_jsondict_to_dataframe(mtg_dict):
     
     return df
 
-def save_df_to_pickle(df):
-    df.to_pickle('mtg_pickle.pkl')
+def save_df_to_pickle(df, filename):
+    df.to_pickle(filename)
 
 
-def read_df_from_pickle():
-    return pd.read_pickle('mtg_pickle.pkl')
+def read_df_from_pickle(filename):
+    return pd.read_pickle(filename)
     
 #write_to_csv(mtg_dict)
             
-mtg_dict = read_json_to_dict()
+def initialize():
+    mtg_dict = read_json_to_dict()
 
-df = convert_jsondict_to_dataframe(mtg_dict)
+    df = convert_jsondict_to_dataframe(mtg_dict)
 
-save_df_to_pickle(df)
+    save_df_to_pickle(df,'mtg_pickle.pkl')
 
-df = read_df_from_pickle()
+def create_commander_pickle():
+    df = read_df_from_pickle('mtg_pickle.pkl')
+    df_commander = df[df['legalities.commander'] == 'Legal'].reset_index()
+    print(len(df_commander))
+    
+    save_df_to_pickle(df_commander, 'mtg_cmdr_pickle.pkl')
 
-#print(df.head())
+#initialize()
+#create_commander_pickle()
+
+df = read_df_from_pickle('mtg_cmdr_pickle.pkl')
+
+print(df.head())
 print(len(df))
-print(df[df.name == 'Counterspell'])
+#print(df['legalities.commander'])
 
-df_cmc = df.groupby('convertedManaCost').name.count().reset_index()
-print(df_cmc)
+#df_legendary_creatures = df[df['types']
+#print(df['Creature' in df['types']])
+df_commanders = df[(df['types'].map(lambda x: 'Creature' in x)) & (df['supertypes'].map(lambda x: 'Legendary' in x))]
+print(df_commanders)
+print(len(df_commanders))
+#print(df[(df['supertypes'].map(lambda x: 'Legendary' in x))])
 
-plt.bar(df_cmc.convertedManaCost, df_cmc.name)
-plt.xlim([0,16])
-plt.show()
+pd_test = pd.DataFrame()
+
+count = 0
+for index, row in df.iterrows():
+    if 'Creature' in row['types']:
+        #pd_test.append(row)
+        count+=1
+    try:
+        if type(row['types']) != list:
+            print('hello')
+        if len(row['types']) == 0:    
+            print('hey')
+    except TypeError:
+        print(row['name'])
+print(count)
+print(type(df['types']))
+print(df.iloc[0]['types'])
+
+#print(df[df['types'].isin(['Creature'])])
+
+#print(df['types'])
+
+#print(df['types'].unique)
+
+
+#print(df[df.name == 'Counterspell'])
+
+
+
+#df_cmc = df.groupby('convertedManaCost').name.count().reset_index()
+#print(df_cmc)
+
+def bar_plot(x, y):
+    plt.bar(x, y)
+    plt.xlim([0,16])
+    plt.show()
 
 
 

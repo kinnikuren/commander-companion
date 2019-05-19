@@ -103,10 +103,12 @@ print(len(df))
 
 #df_legendary_creatures = df[df['types']
 #print(df['Creature' in df['types']])
-df_commanders = df[(df['types'].map(lambda x: 'Creature' in x)) & (df['supertypes'].map(lambda x: 'Legendary' in x))]
+df_commanders = df[(df['types'].map(lambda x: 'Creature' in x)) & (df['supertypes'].map(lambda x: 'Legendary' in x))].reset_index()
 print(df_commanders)
 print(len(df_commanders))
 #print(df[(df['supertypes'].map(lambda x: 'Legendary' in x))])
+
+save_df_to_pickle(df_commanders, 'commanders.pkl')
 
 pd_test = pd.DataFrame()
 
